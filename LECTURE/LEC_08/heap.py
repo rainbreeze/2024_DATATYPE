@@ -1,55 +1,60 @@
-class MinHeap:
-    def __init__(self):
-        self.heap = []
+class Heap:
+    def __init__(self, *args):
+        if len(args) != 0:
+            self.__A = args[0]
+        else:
+            self.__A = []
 
-    def insert(self, val):
-        self.heap.append(val)
-        self._heapify_up(len(self.heap) - 1)
+    def insert(self, x):
+        self.__A.append(x)
+        self.__percolateUp(len(self.__A)-1)
 
-    def _heapify_up(self, index):
-        parent_index = (index - 1) // 2
-        if index > 0 and self.heap[index] < self.heap[parent_index]:
-            self.heap[index], self.heap[parent_index] = self.heap[parent_index], self.heap[index]
-            self._heapify_up(parent_index)
+    def __percolateUp(self, i:int):
+        parent = (i-1) // 2
+        if i > 0 and self.__A[i] > self.__A[parent]:
+            self.__A[i],self.__A[parent] = self.__A[parent],self.__A[i]
+            self.__percolateUp(parent)
+    
+    def deleteMax(self):
+        if (not self.isEmpty()):
+            max = self.__A[0]
+            self.__A[0] = self.__A.pop()
+            self.__percolateDown(0)
+            return max
+        else:
+            return None
+    
+    def __percolateDown(self, i:int):
+        child = 2 * i + 1
+        right = 2 * i + 2
+        if (child <= len(self.__A) - 1):
+            if (right <= len(self.__A) - 1 and self.__A[child] < self.__A[right]):
+                child = right
+            if self.__A[i] < self.__A[child]:
+                self.__A[i],self.__A[child] = self.__A[child],self.__A[i]
+                self.__percolateDown(child)
 
-    def extract_min(self):
-        if len(self.heap) == 0:
-            raise IndexError("Heap is empty")
-        if len(self.heap) == 1:
-            return self.heap.pop()
-        
-        min_val = self.heap[0]
-        self.heap[0] = self.heap.pop()
-        self._heapify_down(0)
-        return min_val
+    def max(self):
+        return self.__A[0]
 
-    def _heapify_down(self, index):
-        smallest = index
-        left = 2 * index + 1
-        right = 2 * index + 2
+    def buildHeap(self):
+        for i in range((len(self.__A) - 2) // 2, -1 , -1):
+            self.__percolateDown(i)
 
-        if left < len(self.heap) and self.heap[left] < self.heap[smallest]:
-            smallest = left
-        if right < len(self.heap) and self.heap[right] < self.heap[smallest]:
-            smallest = right
-        if smallest != index:
-            self.heap[index], self.heap[smallest] = self.heap[smallest], self.heap[index]
-            self._heapify_down(smallest)
+    def isEmpty(self) -> bool:
+        return len(self.__A) == 0
 
-    def peek(self):
-        if len(self.heap) == 0:
-            raise IndexError("Heap is empty")
-        return self.heap[0]
+    def size(self) -> int:
+        return len(self.__A)
 
-    def is_empty(self):
-        return len(self.heap) == 0
+def main():
+    heap = Heap()
 
-# 사용 예제
-min_heap = MinHeap()
-min_heap.insert(5)
-min_heap.insert(3)
-min_heap.insert(8)
-min_heap.insert(1)
+    heap.insert(10)
+    heap.insert(20)
+    heap.insert(5)
 
-print(min_heap.extract_min())  # 1
-print(min_heap.peek())          # 3
+    print("MAX 요소", heap.max())
+
+if __name__ == "__main__":
+    main()
